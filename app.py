@@ -20,7 +20,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 # Streamlit Page Config
 st.set_page_config(page_title="📈 Stock Market Predictor", layout="wide")
-st.markdown("<h1 style='text-align: center;'>🚀 Stock Market Prediction App using GRU</h1>", unsafe_allow_html=True)
+st.markdown("<h1 style='text-align: center;'>🚀 Stock Market Prediction</h1>", unsafe_allow_html=True)
 
 # Sidebar
 with st.sidebar:
