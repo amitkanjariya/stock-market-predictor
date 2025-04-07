@@ -1,0 +1,7 @@
+streamlit>=1.26
+yfinance
+numpy
+pandas
+tensorflow
+scikit-learn
+plotly

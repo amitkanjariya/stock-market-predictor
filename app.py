@@ -18,7 +18,7 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 tf.config.set_visible_devices([], 'GPU')
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
-# Page layout
+# Streamlit Page Config
 st.set_page_config(page_title="📈 Stock Market Predictor", layout="wide")
 st.markdown("<h1 style='text-align: center;'>🚀 Stock Market Prediction App using GRU</h1>", unsafe_allow_html=True)
 
@@ -37,7 +37,6 @@ data = load_data(stock_symbol, start_date, end_date)
 st.subheader(f"📊 Raw Stock Data for {stock_symbol}")
 st.dataframe(data.tail(), use_container_width=True)
 
-# Model Training or Loading
 @st.cache_resource(hash_funcs={pd.DataFrame: lambda _: None})
 def train_or_load_model(data, stock_symbol):
     data['Return'] = data['Close'].pct_change()
@@ -89,53 +88,32 @@ def train_or_load_model(data, stock_symbol):
 
     return preds_inv, y_test_inv, mse, r2
 
-# Load/Train Model
 with st.spinner("Training or loading model..."):
     predictions, y_actual, mse, r2 = train_or_load_model(data.copy(), stock_symbol)
 
-# Model Performance
-st.markdown("### 📈 Model Performance")
+# Performance
+st.markdown("### Model Performance")
 col1, col2 = st.columns(2)
 col1.metric("Mean Squared Error", f"{mse:.4f}")
 col2.metric("R2 Score", f"{r2:.4f}")
 
-# Actual vs Predicted Prices
-st.markdown("### 📉 Actual vs Predicted Stock Prices")
-
-# Get last N dates for test set
+# Plotting
+st.markdown("### Actual vs Predicted Prices")
 test_dates = data.index[-len(y_actual):]
+
 predictions = predictions.flatten()
 y_actual = y_actual.flatten()
 
-# Plot
 fig_pred = go.Figure()
-
-fig_pred.add_trace(go.Scatter(
-    x=test_dates,
-    y=y_actual,
-    mode='lines',
-    name='Actual Prices',
-    line=dict(color='blue')
-))
-
-fig_pred.add_trace(go.Scatter(
-    x=test_dates,
-    y=predictions,
-    mode='lines',
-    name='Predicted Prices',
-    line=dict(color='red', dash='dash')
-))
+fig_pred.add_trace(go.Scatter(x=test_dates, y=y_actual, mode='lines', name='Actual Prices', line=dict(color='blue')))
+fig_pred.add_trace(go.Scatter(x=test_dates, y=predictions, mode='lines', name='Predicted Prices', line=dict(color='red', dash='dash')))
 
 fig_pred.update_layout(
     title=f"Stock Price Prediction for {stock_symbol}",
     xaxis_title="Date",
     yaxis_title="Price",
-    template='plotly_dark',
-    xaxis=dict(
-        showgrid=True,
-        tickformat="%Y-%m",
-        tickangle=45
-    )
+    template='plotly_white',
+    xaxis=dict(showgrid=True, tickformat="%Y-%m", tickangle=45)
 )
 
 st.plotly_chart(fig_pred, use_container_width=True)
